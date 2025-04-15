@@ -2,6 +2,44 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input CreateOwnerInput {
+  address: String!
+  city: String!
+  firstName: String!
+  lastName: String!
+  telephone: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Mutation {
+  createOwner(createOwnerInput: CreateOwnerInput!): Owner!
+}
+
+type Owner {
+  address: String!
+  city: String!
+  firstName: String!
+  id: Int!
+  lastName: String!
+  pets: [Pet!]!
+  telephone: String!
+}
+
+type Pet {
+  birthDate: DateTime!
+  id: Int!
+  name: String!
+  ownerId: Int!
+  typeId: Int!
+}
+
 type Query {
-  testQuery: String!
+  owner(id: Int!): Owner
+  owners: [Owner!]!
+  pet(id: Int!): Pet
+  pets: [Pet!]!
 }

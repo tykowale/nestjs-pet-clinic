@@ -20,7 +20,7 @@ model Owner {
   lastName  String  @map("last_name")
   address   String
   city      String
-  telephone String
+  telephone String  @unique
   pets      Pet[]
 }
 
@@ -36,6 +36,7 @@ model Pet {
 
   @@index([ownerId])
   @@index([typeId])
+  @@unique([name, ownerId])
 }
 
 model PetType {
@@ -50,6 +51,8 @@ model Vet {
   lastName    String      @map("last_name")
   specialties Specialty[] @relation("VetSpecialties")
   visits      Visit[]
+
+  @@unique([firstName, lastName])
 }
 
 model Specialty {

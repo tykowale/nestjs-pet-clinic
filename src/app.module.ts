@@ -6,9 +6,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma.module';
 import { PrismaService } from './prisma.service';
-import { TestModule } from './test/test.module';
-import { TestResolver } from './test.resolver';
-import { TestService } from './test.service';
+import { OwnerModule } from './owner/owner.module';
+import { PetModule } from './pet/pet.module';
 
 @Module({
   imports: [
@@ -19,9 +18,10 @@ import { TestService } from './test.service';
       playground: true, // Enable GraphQL Playground
     }),
     PrismaModule,
-    TestModule,
+    OwnerModule,
+    PetModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService, TestResolver, TestService],
+  providers: [AppService, PrismaService],
 })
 export class AppModule {}
