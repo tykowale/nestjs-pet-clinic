@@ -1,6 +1,8 @@
 import { ObjectType, Field, Int, GraphQLISODateTime } from '@nestjs/graphql';
 import { Pet as PrismaPet } from '@prisma/client';
-// We'll import Owner and PetType entities later when needed for resolvers
+import { Owner } from '../../owner/entities/owner.entity';
+import { PetType } from '../../pet-type/entities/pet-type.entity';
+import { Visit } from '../../visit/entities/visit.entity';
 
 @ObjectType()
 export class Pet implements Partial<PrismaPet> {
@@ -13,11 +15,14 @@ export class Pet implements Partial<PrismaPet> {
   @Field(() => GraphQLISODateTime)
   birthDate: Date;
 
-  @Field(() => Int) // Expose foreign key
-  typeId: number;
+  @Field(() => PetType)
+  type: PetType;
 
-  @Field(() => Int) // Expose foreign key
-  ownerId: number;
+  @Field(() => Owner)
+  owner: Owner;
 
-  // We'll add resolvers for type, owner, and visits later
+  @Field(() => [Visit], { nullable: 'itemsAndList' })
+  visits?: Visit[];
+
+  // We'll add resolvers for visits later
 } 

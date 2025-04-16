@@ -10,6 +10,20 @@ input CreateOwnerInput {
   telephone: String!
 }
 
+input CreatePetInput {
+  birthDate: DateTime!
+  name: String!
+  ownerId: Int!
+  typeId: Int!
+}
+
+input CreateVisitInput {
+  description: String!
+  petId: Int!
+  vetId: Int!
+  visitDate: DateTime!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -17,6 +31,20 @@ scalar DateTime
 
 type Mutation {
   createOwner(createOwnerInput: CreateOwnerInput!): Owner!
+  createPet(createPetInput: CreatePetInput!): Pet!
+  createVisit(createVisitInput: CreateVisitInput!): Visit!
+  removeOwner(id: Int!): Owner!
+  removePet(id: Int!): Pet!
+  removePetType(id: Int!): PetType!
+  removeSpecialty(id: Int!): Specialty!
+  removeVet(id: Int!): Vet!
+  removeVisit(id: Int!): Visit!
+  updateOwner(id: Int!, updateOwnerInput: UpdateOwnerInput!): Owner!
+  updatePet(id: Int!, updatePetInput: UpdatePetInput!): Pet!
+  updatePetType(id: Int!, updatePetTypeInput: UpdatePetTypeInput!): PetType!
+  updateSpecialty(id: Int!, updateSpecialtyInput: UpdateSpecialtyInput!): Specialty!
+  updateVet(id: Int!, updateVetInput: UpdateVetInput!): Vet!
+  updateVisit(id: Int!, updateVisitInput: UpdateVisitInput!): Visit!
 }
 
 type Owner {
@@ -33,13 +61,82 @@ type Pet {
   birthDate: DateTime!
   id: Int!
   name: String!
-  ownerId: Int!
-  typeId: Int!
+  owner: Owner!
+  type: PetType!
+  visits: [Visit!]!
+}
+
+type PetType {
+  id: Int!
+  name: String!
 }
 
 type Query {
   owner(id: Int!): Owner
-  owners: [Owner!]!
+  owners(lastName: String): [Owner!]!
   pet(id: Int!): Pet
+  petType(id: Int!): PetType
+  petTypes: [PetType!]!
   pets: [Pet!]!
+  specialties: [Specialty!]!
+  specialty(id: Int!): Specialty
+  vet(id: Int!): Vet
+  vets: [Vet!]!
+  visit(id: Int!): Visit
+  visits: [Visit!]!
+}
+
+type Specialty {
+  id: Int!
+  name: String!
+}
+
+input UpdateOwnerInput {
+  address: String
+  city: String
+  firstName: String
+  lastName: String
+  telephone: String
+}
+
+input UpdatePetInput {
+  birthDate: DateTime
+  name: String
+  ownerId: Int
+  typeId: Int
+}
+
+input UpdatePetTypeInput {
+  name: String
+}
+
+input UpdateSpecialtyInput {
+  name: String
+}
+
+input UpdateVetInput {
+  firstName: String
+  lastName: String
+}
+
+input UpdateVisitInput {
+  description: String
+  petId: Int
+  vetId: Int
+  visitDate: DateTime
+}
+
+type Vet {
+  firstName: String!
+  id: Int!
+  lastName: String!
+  specialties: [Specialty!]!
+}
+
+type Visit {
+  description: String!
+  id: Int!
+  pet: Pet!
+  vet: Vet!
+  visitDate: DateTime!
 }

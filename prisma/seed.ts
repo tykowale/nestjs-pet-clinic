@@ -5,16 +5,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log(`Start seeding ...`);
 
-  // --- Seed PetTypes ---
   console.log('Seeding PetTypes...');
-  const petTypes = [
-    { name: 'cat' },
-    { name: 'dog' },
-    { name: 'lizard' },
-    { name: 'snake' },
-    { name: 'bird' },
-    { name: 'hamster' },
-  ];
   await prisma.petType.upsert({
     where: { name: 'cat' },
     update: {},
@@ -49,13 +40,7 @@ async function main() {
   const petTypeMap = new Map(createdPetTypes.map((pt) => [pt.name, pt.id]));
   console.log(`Upserted/Found ${createdPetTypes.length} PetTypes.`);
 
-  // --- Seed Specialties ---
   console.log('Seeding Specialties...');
-  const specialties = [
-    { name: 'radiology' },
-    { name: 'surgery' },
-    { name: 'dentistry' },
-  ];
   await prisma.specialty.upsert({
     where: { name: 'radiology' },
     update: {},
@@ -75,7 +60,6 @@ async function main() {
   const specialtyMap = new Map(createdSpecialties.map((s) => [s.name, s.id]));
   console.log(`Upserted/Found ${createdSpecialties.length} Specialties.`);
 
-  // --- Seed Vets (using upsert for idempotency) ---
   console.log('Seeding Vets...');
   const vet1 = await prisma.vet.upsert({
     where: { firstName_lastName: { firstName: 'James', lastName: 'Carter' } }, // Need @@unique([firstName, lastName]) in schema for this
@@ -93,7 +77,6 @@ async function main() {
       specialties: { connect: [{ id: specialtyMap.get('radiology') }] },
     },
   });
-  // ... (Add upserts for other vets similarly, connecting specialties)
   const vet3 = await prisma.vet.upsert({
     where: { firstName_lastName: { firstName: 'Linda', lastName: 'Douglas' } },
     update: {
@@ -115,14 +98,12 @@ async function main() {
       },
     },
   });
-  // Add other vets here...
   const createdVets = await prisma.vet.findMany();
   console.log(`Upserted/Found ${createdVets.length} Vets.`);
 
-  // --- Seed Owners (using upsert for idempotency) ---
   console.log('Seeding Owners...');
   const owner1 = await prisma.owner.upsert({
-    where: { telephone: '555-1234' }, // Use telephone as unique identifier
+    where: { telephone: '555-1234' },
     update: {},
     create: {
       firstName: 'George',
@@ -154,14 +135,11 @@ async function main() {
       telephone: '555-9101',
     },
   });
-  // Add more owners...
   const createdOwners = await prisma.owner.findMany();
   console.log(`Upserted/Found ${createdOwners.length} Owners.`);
 
-  // --- Seed Pets (using upsert for idempotency) ---
   console.log('Seeding Pets...');
   const pet1 = await prisma.pet.upsert({
-    // Need a way to uniquely identify pets for upsert, e.g., @@unique([name, ownerId])
     where: { name_ownerId: { name: 'Leo', ownerId: owner1.id } },
     update: {},
     create: {
@@ -181,7 +159,8 @@ async function main() {
       ownerId: owner2.id,
     },
   });
-  const pet3 = await prisma.pet.upsert({
+
+  await prisma.pet.upsert({
     where: { name_ownerId: { name: 'Rosy', ownerId: owner3.id } },
     update: {},
     create: {
@@ -191,15 +170,10 @@ async function main() {
       ownerId: owner3.id,
     },
   });
-  // Add more pets...
   const createdPets = await prisma.pet.findMany();
   console.log(`Upserted/Found ${createdPets.length} Pets.`);
 
-  // --- Seed Visits (Create only, maybe delete existing first if needed) ---
-  // Visits often don't have a natural unique key for upsert unless you add one
   console.log('Seeding Visits...');
-  // Optional: Delete existing visits for the pets being seeded
-  // await prisma.visit.deleteMany({ where: { petId: { in: [pet1.id, pet2.id, pet3.id] } } });
 
   await prisma.visit.createMany({
     data: [
@@ -207,7 +181,7 @@ async function main() {
         visitDate: new Date('2023-01-10'),
         description: 'Routine checkup',
         petId: pet1.id,
-        vetId: vet1.id, // Assign a vet
+        vetId: vet1.id,
       },
       {
         visitDate: new Date('2023-03-15'),
@@ -221,11 +195,10 @@ async function main() {
         petId: pet2.id,
         vetId: vet3.id,
       },
-      // Add more visits...
     ],
-    skipDuplicates: true, // May not prevent duplicates without a unique constraint
+    skipDuplicates: true,
   });
-  const createdVisits = await prisma.visit.findMany(); // Adjust query if needed
+  const createdVisits = await prisma.visit.findMany();
   console.log(`Created ${createdVisits.length} Visits.`);
 
   console.log(`Seeding finished.`);
